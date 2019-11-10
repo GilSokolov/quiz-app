@@ -71,7 +71,7 @@ import Quiz from './quiz';
         output.innerHTML = bsCard(img, title, text, animation());
     }
 
-    let showResult = async () => {
+    let showResult = () => {
         resultData.results.forEach(result => {
             if (evaluateUserScore(result)) {
                 return renderResultCard(result);
@@ -82,10 +82,9 @@ import Quiz from './quiz';
     let getUserAnswer = () => {
         let answer = [];
         document.querySelectorAll('input:checked')
-        .forEach(input => answer.push(JSON.parse(input.value)));
-
-        if (answer.length === 0) return 'no answer supplied'
-        if (answer.length === 1) return answer[0];
+        .forEach(input => answer.push(JSON.parse(input.value)));// conver strings to primitives
+    
+        if (answer.length < 2) return answer[0];
         return answer
     }
 
