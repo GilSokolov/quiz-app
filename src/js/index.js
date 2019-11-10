@@ -8,7 +8,7 @@ import Quiz from './quiz';
 
 
 (function() {
-    let quizUrl = 'http://proto.io/en/jobs/candidate-questions/quiz.json',
+    let quizUrl = 'https://proto.io/en/jobs/candidate-questions/quiz.json',
         resultUrl = 'https://proto.io/en/jobs/candidate-questions/result.json',
         output = document.getElementById('card-output'),
         displayeTime = 3000,// after user answer
