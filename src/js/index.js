@@ -2,15 +2,16 @@
 import 'regenerator-runtime/runtime';
 
 import { ajax, json } from './ajax';
-import { bsAlert, bsCard, bsCheckbox, bsJumbotron, bsProgressBar, bsRadioButton } from './bs-components';
-import { addClassById, answersContainer, getRandomNumber } from './helpers';
+import { bsAlert, bsButton, bsCard, bsCheckbox, bsJumbotron, bsProgressBar, bsRadioButton } from './bs-components';
+import { addClassById, answersContainer, getRandomNumber, HTMLparser, resultContainer } from './helpers';
 import Quiz from './quiz';
 
 
 (function() {
     let quizUrl = 'https://proto.io/en/jobs/candidate-questions/quiz.json',
         resultUrl = 'https://proto.io/en/jobs/candidate-questions/result.json',
-        output = document.getElementById('card-output'),
+        cardOutput = '.card-output',
+        alertOutput = '.alert-output',
         displayeTime = 3000,// after user answer
         animations = ['lightSpeedIn', 'fadeInDownBig', 'bounceInDown', 'flipInY', 'rotateIn', 'slideInUp'],
         quiz,
@@ -18,6 +19,10 @@ import Quiz from './quiz';
 
     let getData = (url) => {
         return ajax(url).get().then(json);
+    }
+
+    let getInputs = () => {
+        return document.querySelector('.answers').querySelectorAll('input:checked');
     }
 
     let answerGenerator = (question_type, possible_answers) => {
@@ -40,20 +45,10 @@ import Quiz from './quiz';
         return animations[getRandomNumber(animations.length)];
     }
 
-    let renderQuestionCard = () => {
-        let { img, title, question_type, possible_answers } = quiz.question;
-
-        let answers = answerGenerator(question_type, possible_answers);
-
-        let text = answersContainer(answers);
-    
-        output.innerHTML = bsCard(img, title, text, animation());
-    }
-
     let highlighteCorrectAnswer = () => {
         let { correctAnswer } = quiz;
 
-        document.querySelectorAll('input:checked').forEach(input => input.checked = false);
+        getInputs().forEach(input => input.checked = false);
 
         if (Array.isArray(correctAnswer)) {
             return correctAnswer.forEach(id => addClassById(id, 'is-valid'));
@@ -65,11 +60,45 @@ import Quiz from './quiz';
     let evaluateUserScore = ({ minpoints, maxpoints }) => {
         return quiz.userScore >= minpoints && quiz.userScore <= maxpoints;
     }
-    // TODO: add restart button if user score less then 100
+
+    let addActionButton = (text, type, event) => {
+        document.querySelector('.actionBtn').replaceWith( bsButton(text, type, event) );
+    }
+
+    let restart = (e) => {
+        e.target.removeEventListener("click", restart);
+        renderQuestionCard(quiz.restart());
+    }
+
+    let render = (className, text) => {
+        let output = document.querySelector(className);
+        let element = HTMLparser(text);
+        output.firstChild ? output.replaceChild(element, output.firstChild) : output.appendChild(element);
+        return element;
+    }
+
+    let renderQuestionCard = () => {
+        let { img, title, question_type, possible_answers } = quiz.question;
+
+        let answers = answerGenerator(question_type, possible_answers),
+            text = answersContainer(answers),
+            card = bsCard(img, title, text, animation());
+
+        render(cardOutput, card);
+        addActionButton('Next question', 'btn-primary', onClick);
+    }
+
     let renderResultCard = (data) => {
         let { img, title, message } = data;
-        let text = `${message} <p>your score is:</p> ${bsProgressBar(quiz.userScore)}`;
-        output.innerHTML = bsCard(img, title, text, animation());
+        let score = bsProgressBar(quiz.userScore),
+            text = resultContainer(message, score),
+            card =  bsCard(img, title, text, animation());
+
+        render(cardOutput, card);
+ 
+        if( quiz.userScore !== 100 ) {
+            addActionButton('Try again', 'btn-warning', restart);
+        }
     }
 
     let showResult = () => {
@@ -82,15 +111,11 @@ import Quiz from './quiz';
 
     let getUserAnswer = () => {
         let answer = [];
-        document.querySelectorAll('input:checked')
-        .forEach(input => answer.push(JSON.parse(input.value)));// conver strings to primitives
+        // conver strings to primitives
+        getInputs().forEach(input => answer.push(JSON.parse(input.value)));
     
         if (answer.length < 2) return answer[0];
         return answer
-    }
-
-    let addClickEvent = () => {
-        document.getElementById('nextQuestionBtn').addEventListener('click', onClick);
     }
 
     let onClick = (e) => {
@@ -98,23 +123,18 @@ import Quiz from './quiz';
         e.target.disabled = true;
         e.target.removeEventListener("click", onClick);
 
-        let alertOutput = document.getElementById('alert-output');
-
         let userAnswer = getUserAnswer();
 
         if (quiz.validatedUserAnswer(userAnswer)) {
-            alertOutput.innerHTML = bsAlert('success', 'Correct!', 'tada');
+            render(alertOutput, bsAlert('success', 'Correct!', 'tada'));
         } else {
-            alertOutput.innerHTML = bsAlert('danger', 'Wrong!', 'shake');
+            render(alertOutput, bsAlert('danger', 'Wrong!', 'shake'));
             highlighteCorrectAnswer();
         }
     
         setTimeout(() => {
-            if (quiz.hasNext) {
-                renderQuestionCard(quiz.next());
-                addClickEvent();
-                return
-            }
+            if (quiz.hasNext) return renderQuestionCard(quiz.next());
+
             showResult();
         }, displayeTime);
     }
@@ -124,10 +144,8 @@ import Quiz from './quiz';
         resultData = await getData(resultUrl);
 
         document.getElementById('jumbotron-output').innerHTML = bsJumbotron(data.title, data.description);
-
         quiz = new Quiz(data.questions);
         renderQuestionCard(quiz.question);
-        addClickEvent();
         return 'Quiz initialized'
     }
 

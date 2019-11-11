@@ -4,7 +4,7 @@ function bsCard(img, title, text, animation) {
         <img src="${img}" class="card-img-top" alt="${title}">
         <div class="card-body">
             <h5 class="card-title">${title}</h5>
-            <p class="card-text">${text}</p>
+            <div class="card-text">${text}</div>
         </div>
     </div>`
 }
@@ -50,4 +50,12 @@ function bsAlert(type, text, animation) {
     </div>`
 }
 
-export { bsCard, bsCheckbox, bsRadioButton, bsJumbotron, bsProgressBar, bsAlert }
+function bsButton(text, type, event) {
+    let btn = document.createElement('button');
+    btn.classList.add('btn', 'btn-block', 'mt-3', type);
+    btn.innerText = text;
+    btn.addEventListener('click',event);
+    return btn
+}
+
+export { bsCard, bsCheckbox, bsRadioButton, bsJumbotron, bsProgressBar, bsAlert, bsButton }

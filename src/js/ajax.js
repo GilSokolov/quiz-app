@@ -1,7 +1,6 @@
 function ajax(url) {
 
-    let xhttp;
-    xhttp = new XMLHttpRequest();
+    let xhttp = new XMLHttpRequest();
 
     let onSuccess = (resolve) => {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -25,18 +24,18 @@ function ajax(url) {
         });
     }
 
-    function get() {
+    let get = () => {
         return send('GET');
     }
 
-    function post(data) {
+    let post = (data) =>  {
         return send("POST", data);
     }
 
     return { get, post }
 }
 
-function json(xhttp) {
+let json = (xhttp) => {
     return JSON.parse(xhttp.response);
 }
 

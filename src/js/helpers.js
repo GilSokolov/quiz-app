@@ -1,10 +1,20 @@
+import { bsProgressBar } from './bs-components';
+
 export function answersContainer(answers) {
     return `
-    <span id="answers">
-        <div style="min-height: 60px" id="alert-output"></div>
+    <div style="min-height: 60px" class="alert-output"></div>
+    <div class="answers">
         ${answers}
-        <button id="nextQuestionBtn" class="btn btn-primary btn-block mt-3">Next Question</button>
-    </span>`;
+    </div>
+    <span class="actionBtn"></span>`;
+}
+
+export function resultContainer(message, progressBar) {
+    return `
+    <p>${message}</p>
+    <p>your score is:</p>
+    ${progressBar}
+    <span class="actionBtn"></span>`;
 }
 
 export function addClassById(id, className) {
@@ -17,4 +27,9 @@ export function addClassById(id, className) {
 */ 
 export function getRandomNumber(number) {
     return Math.floor(Math.random() * number );
+}
+
+export function HTMLparser(text) {
+    const html = new DOMParser().parseFromString( text , 'text/html');
+    return html.body.firstChild; 
 }

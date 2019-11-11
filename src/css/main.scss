@@ -9,6 +9,8 @@ html, body {
 
 main {
     display: flex;
+    min-height: 40rem;
+    overflow: auto;
 }
 
 .card {
