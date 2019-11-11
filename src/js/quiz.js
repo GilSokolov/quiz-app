@@ -45,7 +45,7 @@ export default (function(){
         */
         isCorrect(userAnswer) {  
             if (Array.isArray(userAnswer)) {
-                return userAnswer.every((answer) => this.correctAnswer.includes((answer)));
+                return userAnswer.length === this.correctAnswer.length && userAnswer.every((answer) => this.correctAnswer.includes((answer)));
             }
         
             return this.correctAnswer === userAnswer;
