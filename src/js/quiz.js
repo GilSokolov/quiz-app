@@ -1,10 +1,14 @@
 export default (function(){
     let _userPoints = 0;
+    let _questionIndex = 0;
 
     class Quiz {
         constructor(questions) {
-            this.questionIndex = 0;
             this.questions = questions;
+        }
+
+        get questionIndex() {
+            return _questionIndex;
         }
 
         get userPoints() {
@@ -57,7 +61,13 @@ export default (function(){
         }
     
         next() {
-            this.questionIndex ++;
+            _questionIndex ++;
+            return this.question;
+        }
+
+        restart() {
+            _questionIndex = 0;
+            _userPoints = 0;
             return this.question;
         }
        

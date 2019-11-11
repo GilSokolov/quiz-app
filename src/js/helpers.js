@@ -11,7 +11,10 @@ export function addClassById(id, className) {
     let element = document.getElementById(id);
     element.classList.add(className);
 }
-
-export function getRandomNumber() {
-    return Math.floor(Math.random() * 6 );
+ /**
+ * @param {number}
+ * @returns {number} a number between 0 and the number supplied in the parameter.  
+*/ 
+export function getRandomNumber(number) {
+    return Math.floor(Math.random() * number );
 }

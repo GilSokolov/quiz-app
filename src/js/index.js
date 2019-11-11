@@ -33,9 +33,11 @@ import Quiz from './quiz';
             return possible_answers.map(answer => bsCheckbox(answer.a_id, answer.caption)).join('');
         }
     }
-
+    /**
+    * @returns {string} random animation calss name.  
+    */  
     let animation = () => {
-        return animations[getRandomNumber()];
+        return animations[getRandomNumber(animations.length)];
     }
 
     let renderQuestionCard = () => {
@@ -63,11 +65,10 @@ import Quiz from './quiz';
     let evaluateUserScore = ({ minpoints, maxpoints }) => {
         return quiz.userScore >= minpoints && quiz.userScore <= maxpoints;
     }
-
+    // TODO: add restart button if user score less then 100
     let renderResultCard = (data) => {
         let { img, title, message } = data;
-        let text = `${message} <p>your score is:</p> ${bsProgressBar(quiz.userScore)}`
-    
+        let text = `${message} <p>your score is:</p> ${bsProgressBar(quiz.userScore)}`;
         output.innerHTML = bsCard(img, title, text, animation());
     }
 
